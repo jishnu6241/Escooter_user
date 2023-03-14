@@ -15,7 +15,7 @@ class VerifiedScreen extends StatelessWidget {
               "assets/images/check.png",
               height: 180,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               "Verified",
               style: Theme.of(context).textTheme.headline3,

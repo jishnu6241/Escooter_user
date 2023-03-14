@@ -41,44 +41,40 @@ class Profile extends StatelessWidget {
           vertical: 20,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: const [
             TextField(
               decoration: InputDecoration(
                 hintText: "First Name",
               ),
             ),
-            SizedBox(height: 30),
             TextField(
               decoration: InputDecoration(
                 hintText: "Last Name",
               ),
             ),
-            SizedBox(height: 30),
             TextField(
               decoration: InputDecoration(
                 hintText: "Email ID",
               ),
             ),
-            SizedBox(height: 30),
             TextField(
               decoration: InputDecoration(
                 hintText: "Mobile Number",
               ),
             ),
-            SizedBox(height: 30),
             TextField(
               decoration: InputDecoration(
                 hintText: "Password",
               ),
             ),
-            SizedBox(height: 30),
             TextField(
               decoration: InputDecoration(
                 hintText: "Confirm Password",
               ),
             ),
             SizedBox(
-              height: 20,
+              height: 50,
             ),
             CustomButton(
               text: "Proceed",

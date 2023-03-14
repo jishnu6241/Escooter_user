@@ -1,16 +1,13 @@
-import 'dart:async';
-
-import 'package:escooter/ui/screen_/signup_screen.dart';
 import 'package:flutter/material.dart';
 
-class splash extends StatefulWidget {
-  const splash({super.key});
+class Splash extends StatefulWidget {
+  const Splash({super.key});
 
   @override
-  State<splash> createState() => _splashState();
+  State<Splash> createState() => _SplashState();
 }
 
-class _splashState extends State<splash> {
+class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

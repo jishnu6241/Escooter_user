@@ -1,6 +1,7 @@
-import 'package:escooter/ui/screen_/idetification.dart';
+import 'package:escooter/ui/screen_/moneytowallet.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 main() {
   runApp(const MyApp());
@@ -13,6 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light().copyWith(
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle:
+              SystemUiOverlayStyle(statusBarColor: Color(0xff3FD5DF)),
+        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
@@ -27,7 +32,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: Identification(),
+      home: const AddMoney(),
     );
   }
 }

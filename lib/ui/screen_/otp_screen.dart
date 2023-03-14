@@ -21,7 +21,7 @@ class EnterOtp extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_back_ios),
+            icon: const Icon(Icons.arrow_back_ios),
             color: Colors.black,
           )),
       body: Column(
@@ -29,7 +29,7 @@ class EnterOtp extends StatelessWidget {
           Container(
             width: 400,
             height: 320,
-            color: Color(0xFFDFDFDF),
+            color: const Color(0xFFDFDFDF),
             child: Padding(
               padding: const EdgeInsets.only(
                 left: 10,
@@ -47,8 +47,8 @@ class EnterOtp extends StatelessWidget {
                         .titleMedium
                         ?.copyWith(fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(height: 10),
-                  Align(
+                  const SizedBox(height: 10),
+                  const Align(
                     alignment: Alignment.topRight,
                     child: Text(
                       "Edit",
@@ -56,12 +56,12 @@ class EnterOtp extends StatelessWidget {
                       textAlign: TextAlign.end,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
+                    children: const [
                       CustomTextField(),
                       CustomTextField(),
                       CustomTextField(),
@@ -71,7 +71,7 @@ class EnterOtp extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
                       "Resend?",
@@ -92,7 +92,7 @@ class EnterOtp extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                color: Color(0xFFB6B6B6),
+                color: const Color(0xFFB6B6B6),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
                   child: Text(
