@@ -1,8 +1,6 @@
-import 'package:escooter/ui/screen_/moneytowallet.dart';
-import 'package:escooter/ui/screen_/otp_screen.dart';
-
+import 'package:escooter/ui/screens/home_screen.dart';
+import 'package:escooter/ui/screens/login.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 main() {
   runApp(const MyApp());
@@ -14,26 +12,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Escooter App',
       theme: ThemeData.light().copyWith(
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle:
-              SystemUiOverlayStyle(statusBarColor: Color(0xff3FD5DF)),
-        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
+          fillColor: Colors.green[50],
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 10,
+            horizontal: 20,
+            vertical: 15,
+          ),
+          iconColor: Colors.greenAccent,
+          prefixIconColor: Colors.greenAccent,
+          suffixIconColor: Colors.greenAccent,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
           ),
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const AddMoney(),
+      home: const HomeScreen(),
     );
   }
 }
