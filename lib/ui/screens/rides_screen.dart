@@ -1,3 +1,4 @@
+import 'package:escooter/ui/screens/hub_details_screen.dart';
 import 'package:escooter/ui/widgets/custom_action_button.dart';
 import 'package:escooter/ui/widgets/custom_card.dart';
 import 'package:escooter/ui/widgets/custom_search.dart';
@@ -51,7 +52,14 @@ class _RidesScreenState extends State<RidesScreen> {
                   children: List<Widget>.generate(
                     10,
                     (index) => HubCard(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HubDetailsScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

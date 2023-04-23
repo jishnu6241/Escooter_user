@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen>
           topLeft: Radius.circular(15),
           topRight: Radius.circular(15),
         ),
-        color: Colors.grey[900],
+        color: Colors.greenAccent[100],
         elevation: 10,
         child: CustomBottomNavBar(
           selectedIndex: tabController.index,
@@ -137,7 +137,7 @@ class NavBarButton extends StatelessWidget {
               Icon(
                 isSelected ? selectedIconData : iconData,
                 size: 24,
-                color: Colors.greenAccent,
+                color: Colors.black,
               ),
               if (isSelected) const SizedBox(width: 20),
               if (isSelected)
@@ -145,7 +145,7 @@ class NavBarButton extends StatelessWidget {
                   label,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.greenAccent,
+                        color: Colors.black,
                       ),
                 ),
             ],

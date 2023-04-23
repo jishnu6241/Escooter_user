@@ -1,5 +1,6 @@
 import 'package:escooter/ui/screens/home_screen.dart';
 import 'package:escooter/ui/screens/login.dart';
+import 'package:escooter/ui/screens/profile_creation_screen.dart';
 import 'package:flutter/material.dart';
 
 main() {

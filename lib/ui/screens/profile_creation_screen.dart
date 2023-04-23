@@ -161,23 +161,6 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 height: 10,
                               ),
                               CustomInputFormField(
-                                controller: _depostiController,
-                                keyboardType: TextInputType.number,
-                                labelText: 'Desposit(Minimum ₹500)',
-                                prefixIcon: Icons.money_outlined,
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter desposit";
-                                  }
-                                },
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              CustomInputFormField(
                                 controller: _bankNameController,
                                 labelText: 'Bank Name',
                                 prefixIcon: Icons.money_outlined,
@@ -243,7 +226,43 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                     : 'Upload Proof',
                               ),
                               const Divider(
-                                color: Colors.blueAccent,
+                                color: Colors.white,
+                                height: 20,
+                              ),
+                              Text(
+                                'You\'ve to deposit amount to E Scooter',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              CustomCard(
+                                color: Colors.black,
+                                child: Center(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: Text(
+                                      '₹500',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Divider(
+                                color: Colors.white,
                                 height: 20,
                               ),
                               CustomButton(
