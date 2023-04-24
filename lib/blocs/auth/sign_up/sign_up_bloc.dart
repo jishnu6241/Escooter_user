@@ -106,6 +106,23 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           } else {
             emit(SignUpFailureState());
           }
+        } else if (event is DepositEvent) {
+          if (event.withdraw) {
+            await supabaseClient.from('profile').update({
+              'deposit_amount': 0,
+            }).eq('user_id', supabaseClient.auth.currentUser!.id);
+
+            await supabaseClient.from('withdraw_request').insert(
+              {
+                'user_id': supabaseClient.auth.currentUser!.id,
+              },
+            );
+          } else {
+            await supabaseClient.from('profile').update({
+              'deposit_amount': 500,
+            }).eq('user_id', supabaseClient.auth.currentUser!.id);
+          }
+          add(GetUserEvent());
         }
       } catch (e, s) {
         Logger().e('$e\n$s');

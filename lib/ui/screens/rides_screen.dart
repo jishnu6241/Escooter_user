@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:escooter/blocs/hubs_and_scooters/hubs_and_scooters_bloc.dart';
 import 'package:escooter/ui/screens/hub_details_screen.dart';
 import 'package:escooter/ui/widgets/custom_action_button.dart';
@@ -7,6 +9,8 @@ import 'package:escooter/ui/widgets/hub_card.dart';
 import 'package:escooter/ui/widgets/label_with_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/custom_alert_dialog.dart';
 import '../widgets/custom_progress_indicator.dart';
@@ -85,7 +89,10 @@ class _RidesScreenState extends State<RidesScreen> {
                   ),
                   state is HubsAndScootersSuccessState
                       ? state.rideDetails != null
-                          ? RideCard()
+                          ? RideCard(
+                              rideDetails: state.rideDetails,
+                              hubsAndScootersBloc: hubsAndScootersBloc,
+                            )
                           : const Center(
                               child: Text(
                                 'You dont have a ride!',
@@ -135,10 +142,58 @@ class _RidesScreenState extends State<RidesScreen> {
   }
 }
 
-class RideCard extends StatelessWidget {
+class RideCard extends StatefulWidget {
+  final dynamic rideDetails;
+  final HubsAndScootersBloc hubsAndScootersBloc;
   const RideCard({
     super.key,
+    required this.rideDetails,
+    required this.hubsAndScootersBloc,
   });
+
+  @override
+  State<RideCard> createState() => _RideCardState();
+}
+
+class _RideCardState extends State<RideCard> {
+  String getElapsed() {
+    Duration duration = DateTime.now()
+        .difference(DateTime.parse(widget.rideDetails['start_time']).toLocal());
+
+    return formatDuration(duration);
+  }
+
+  int getAmount() {
+    Duration duration = DateTime.now()
+        .difference(DateTime.parse(widget.rideDetails['start_time']).toLocal());
+
+    return duration.inMinutes * 10;
+  }
+
+  String formatDuration(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final hoursString = hours == 1 ? 'h' : 'h';
+    final minutesString = minutes == 1 ? 'm' : 'm';
+    return '$hours$hoursString $minutes$minutesString';
+  }
+
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +206,9 @@ class RideCard extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'KL 13 A 1234',
+                widget.rideDetails['scooter']['plate_no']
+                    .toString()
+                    .toUpperCase(),
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -163,20 +220,32 @@ class RideCard extends StatelessWidget {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Expanded(
-                    child: LabelWithText(
-                      label: 'Picked Hub',
-                      text: 'Kannur',
-                      labelColor: Colors.white60,
-                      textColor: Colors.white70,
+                    child: GestureDetector(
+                      onTap: () async {
+                        Uri uri = Uri.parse(
+                            'https://www.google.com/maps/search/?api=1&query=${widget.rideDetails['start_hub']['latitude']},${widget.rideDetails['start_hub']['longitude']}');
+
+                        await launchUrl(uri);
+                      },
+                      child: LabelWithText(
+                        label: 'Picked Hub',
+                        text: widget.rideDetails['start_hub']['name']
+                            .toString()
+                            .toUpperCase(),
+                        labelColor: Colors.white60,
+                        textColor: Colors.white70,
+                      ),
                     ),
                   ),
                   Expanded(
                     child: LabelWithText(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       label: 'Picked On',
-                      text: '12/12/2022 10:00 am',
+                      text: DateFormat('dd/MM/yyyy hh:mm a').format(
+                          DateTime.parse(widget.rideDetails['start_time'])
+                              .toLocal()),
                       labelColor: Colors.white60,
                       textColor: Colors.white70,
                     ),
@@ -188,22 +257,22 @@ class RideCard extends StatelessWidget {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Expanded(
                     child: LabelWithText(
-                      label: 'Droped Hub',
-                      text: 'Payyanur',
+                      label: 'Time Elapsed',
+                      text: getElapsed(),
                       labelColor: Colors.white60,
-                      textColor: Colors.white70,
+                      textColor: Colors.green,
                     ),
                   ),
                   Expanded(
                     child: LabelWithText(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      label: 'Droped On',
-                      text: '12/12/2022 08:00 pm',
+                      label: 'Fair',
+                      text: getAmount().toString(),
                       labelColor: Colors.white60,
-                      textColor: Colors.white70,
+                      textColor: Colors.orange,
                     ),
                   ),
                 ],
@@ -229,7 +298,9 @@ class RideCard extends StatelessWidget {
                     child: CustomActionButton(
                       color: Colors.blue,
                       iconData: Icons.pin_drop_outlined,
-                      onPressed: () {},
+                      onPressed: () {
+                        //
+                      },
                       label: 'Drop Scooter',
                     ),
                   ),

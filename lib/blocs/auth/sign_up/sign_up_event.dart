@@ -33,4 +33,12 @@ class UpdateUserEvent extends SignUpEvent {
   });
 }
 
+class DepositEvent extends SignUpEvent {
+  final bool withdraw;
+
+  DepositEvent({
+    this.withdraw = false,
+  });
+}
+
 class GetUserEvent extends SignUpEvent {}

@@ -51,7 +51,12 @@ class HubsAndScootersBloc
           if (currentRide != null) {
             currentRide['scooter'] = await scooterTable
                 .select('*')
-                .eq('id', currentRide['scooter_id']);
+                .eq('id', currentRide['scooter_id'])
+                .single();
+            currentRide['start_hub'] = await hubTable
+                .select('*')
+                .eq('id', currentRide['start_hub_id'])
+                .single();
           }
 
           emit(HubsAndScootersSuccessState(
