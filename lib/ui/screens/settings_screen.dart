@@ -1,5 +1,4 @@
 import 'package:escooter/ui/screens/login.dart';
-import 'package:escooter/ui/screens/profile_screen.dart';
 import 'package:escooter/ui/screens/complaint_screen.dart';
 import 'package:escooter/ui/screens/suggestion_screen.dart';
 import 'package:escooter/ui/widgets/change_password_dialog.dart';
@@ -70,18 +69,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-                SettingsCard(
-                  icon: Icons.person_4_outlined,
-                  label: 'Profile',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProfileScreen(),
-                      ),
-                    );
-                  },
-                ),
+                // SettingsCard(
+                //   icon: Icons.person_4_outlined,
+                //   label: 'Profile',
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (context) => const ProfileScreen(),
+                //       ),
+                //     );
+                //   },
+                // ),
                 SettingsCard(
                   icon: Icons.lock_open_outlined,
                   label: 'Change Password',

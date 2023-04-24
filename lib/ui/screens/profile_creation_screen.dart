@@ -1,10 +1,12 @@
-import 'package:escooter/blocs/auth/sign_in/sign_in_bloc.dart';
+import 'package:escooter/blocs/auth/sign_up/sign_up_bloc.dart';
 import 'package:escooter/ui/screens/home_screen.dart';
 import 'package:escooter/ui/widgets/custom_action_button.dart';
+import 'package:escooter/ui/widgets/custom_alert_dialog.dart';
 import 'package:escooter/ui/widgets/custom_button.dart';
 import 'package:escooter/ui/widgets/custom_card.dart';
 import 'package:escooter/ui/widgets/custom_input_form_field.dart';
 import 'package:escooter/util/custom_file_picker.dart';
+import 'package:escooter/util/value_validators.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,27 +22,17 @@ class ProfileCreationScreen extends StatefulWidget {
 
 class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
   bool isObscure = true;
-  @override
-  void initState() {
-    // Future.delayed(const Duration(milliseconds: 100), () {
-    //   if (Supabase.instance.client.auth.currentUser != null) {
-    //     Navigator.of(context).push(
-    //       MaterialPageRoute(
-    //         builder: (context) => const HomeScreen(),
-    //       ),
-    //     );
-    //   }
-    // });
-    super.initState();
-  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _depostiController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _acNumberController = TextEditingController();
   final TextEditingController _ifscController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   PlatformFile? selectedFile;
 
@@ -65,21 +57,20 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                     horizontal: 20,
                     vertical: 15,
                   ),
-                  child: BlocProvider<SignInBloc>(
-                    create: (context) => SignInBloc(),
-                    child: BlocConsumer<SignInBloc, SignInState>(
+                  child: BlocProvider<SignUpBloc>(
+                    create: (context) => SignUpBloc(),
+                    child: BlocConsumer<SignUpBloc, SignUpState>(
                       listener: (context, state) {
-                        if (state is SignInFailureState) {
+                        if (state is SignUpFailureState) {
                           showDialog(
                             context: context,
-                            builder: (context) => const AlertDialog(
-                              title: Text("Login Failed"),
-                              content: Text(
-                                'Please check your email and password and try again.',
-                              ),
+                            builder: (context) => CustomAlertDialog(
+                              title: 'Failed',
+                              message: state.message,
+                              primaryButtonLabel: 'Ok',
                             ),
                           );
-                        } else if (state is SignInSuccessState) {
+                        } else if (state is SignUpSuccessState) {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => const HomeScreen(),
@@ -131,13 +122,50 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 controller: _nameController,
                                 prefixIcon: Icons.person_4_outlined,
                                 labelText: 'Name',
+                                validator: alphabeticWithSpaceValidator,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              CustomInputFormField(
+                                controller: _emailController,
+                                prefixIcon: Icons.email,
+                                labelText: 'Email',
+                                validator: emailValidator,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              CustomInputFormField(
+                                controller: _passwordController,
+                                isObscure: isObscure,
+                                labelText: 'Password',
+                                prefixIcon: Icons.lock,
+                                validator: passwordValidator,
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    isObscure = !isObscure;
+                                    setState(() {});
+                                  },
+                                  icon: Icon(
+                                    isObscure
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.green[700],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              CustomInputFormField(
+                                controller: _confirmPasswordController,
+                                isObscure: isObscure,
+                                labelText: 'Confirm Password',
+                                prefixIcon: Icons.lock,
                                 validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter name";
-                                  }
+                                  return confirmPasswordValidator(
+                                      value, _passwordController.text.trim());
                                 },
                               ),
                               const SizedBox(
@@ -148,14 +176,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 keyboardType: TextInputType.phone,
                                 labelText: 'Phone',
                                 prefixIcon: Icons.lock,
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter phone";
-                                  }
-                                },
+                                validator: phoneNumberValidator,
                               ),
                               const SizedBox(
                                 height: 10,
@@ -164,14 +185,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 controller: _bankNameController,
                                 labelText: 'Bank Name',
                                 prefixIcon: Icons.money_outlined,
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter bank name";
-                                  }
-                                },
+                                validator: alphabeticWithSpaceValidator,
                               ),
                               const SizedBox(
                                 height: 10,
@@ -181,14 +195,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 keyboardType: TextInputType.number,
                                 labelText: 'Account Number',
                                 prefixIcon: Icons.money_outlined,
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter account number";
-                                  }
-                                },
+                                validator: bankAccountNumberValidator,
                               ),
                               const SizedBox(
                                 height: 10,
@@ -198,14 +205,7 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 keyboardType: TextInputType.number,
                                 labelText: 'IFSC Code',
                                 prefixIcon: Icons.money_outlined,
-                                validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    return null;
-                                  } else {
-                                    return "Please enter IFSC Code";
-                                  }
-                                },
+                                validator: ifscCodeValidator,
                               ),
                               const SizedBox(
                                 height: 20,
@@ -229,59 +229,54 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                                 color: Colors.white,
                                 height: 20,
                               ),
-                              Text(
-                                'You\'ve to deposit amount to E Scooter',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                              ),
-                              const SizedBox(
-                                height: 6,
-                              ),
-                              CustomCard(
-                                color: Colors.black,
-                                child: Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      '₹500',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ),
-                                ),
+                              CustomButton(
+                                labelColor: Colors.black,
+                                label: 'Register',
+                                isLoading: state is SignUpLoadingState,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (selectedFile != null) {
+                                      BlocProvider.of<SignUpBloc>(context).add(
+                                        CreateUserEvent(
+                                          accountNo:
+                                              _acNumberController.text.trim(),
+                                          bankName:
+                                              _bankNameController.text.trim(),
+                                          email: _emailController.text.trim(),
+                                          ifsc: _ifscController.text.trim(),
+                                          name: _nameController.text.trim(),
+                                          password:
+                                              _passwordController.text.trim(),
+                                          phoneNumber:
+                                              _phoneController.text.trim(),
+                                          proofDoc: selectedFile!,
+                                        ),
+                                      );
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const CustomAlertDialog(
+                                          title: 'Select Proof',
+                                          message:
+                                              'Select a proof file to continue',
+                                          primaryButtonLabel: 'Ok',
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
                               ),
                               const Divider(
                                 color: Colors.white,
                                 height: 20,
                               ),
                               CustomButton(
-                                labelColor: Colors.black,
-                                label: 'Pay & Continue',
-                                isLoading: state is SignInLoadingState,
+                                color: Colors.black,
+                                labelColor: Colors.greenAccent,
+                                label: 'Login',
                                 onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    String email = _nameController.text.trim();
-                                    String password =
-                                        _phoneController.text.trim();
-
-                                    BlocProvider.of<SignInBloc>(context).add(
-                                      SignInEvent(
-                                        email: email,
-                                        password: password,
-                                      ),
-                                    );
-                                  }
+                                  Navigator.pop(context);
                                 },
                               ),
                             ],

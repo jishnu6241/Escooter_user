@@ -1,6 +1,7 @@
 import 'package:escooter/blocs/auth/sign_in/sign_in_bloc.dart';
 import 'package:escooter/ui/screens/home_screen.dart';
-import 'package:escooter/ui/screens/register_screen.dart';
+import 'package:escooter/ui/screens/profile_creation_screen.dart';
+import 'package:escooter/ui/widgets/custom_alert_dialog.dart';
 import 'package:escooter/ui/widgets/custom_button.dart';
 import 'package:escooter/ui/widgets/custom_card.dart';
 import 'package:escooter/ui/widgets/custom_input_form_field.dart';
@@ -64,11 +65,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (state is SignInFailureState) {
                           showDialog(
                             context: context,
-                            builder: (context) => const AlertDialog(
-                              title: Text("Login Failed"),
-                              content: Text(
-                                'Please check your email and password and try again.',
-                              ),
+                            builder: (context) => const CustomAlertDialog(
+                              title: 'Login Failed',
+                              message:
+                                  'Please check your email and password and try again.',
+                              primaryButtonLabel: 'Ok',
                             ),
                           );
                         } else if (state is SignInSuccessState) {
@@ -210,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const RegisterScreen(),
+                                          const ProfileCreationScreen(),
                                     ),
                                   );
                                 },
