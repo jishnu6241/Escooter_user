@@ -58,13 +58,13 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
             await supabaseClient.from('profile').insert({
               'name': event.name,
-              'email': event.phoneNumber,
+              'email': event.email,
               'phone': event.phoneNumber,
               'proof_doc_url':
                   supabaseClient.storage.from('docs').getPublicUrl(path),
-              'bank_name': event.phoneNumber,
-              'bank_ac_no': event.phoneNumber,
-              'bank_ifsc': event.phoneNumber,
+              'bank_name': event.bankName,
+              'bank_ac_no': event.accountNo,
+              'bank_ifsc': event.ifsc,
               'user_id': res.user!.id,
             });
             await supabaseClient.auth.signInWithPassword(
@@ -95,11 +95,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           if (res.user != null) {
             await supabaseClient.from('profile').update({
               'name': event.name,
-              'email': event.phoneNumber,
+              'email': event.email,
               'phone': event.phoneNumber,
-              'bank_name': event.phoneNumber,
-              'bank_ac_no': event.phoneNumber,
-              'bank_ifsc': event.phoneNumber,
+              'bank_name': event.bankName,
+              'bank_ac_no': event.accountNo,
+              'bank_ifsc': event.ifsc,
             }).eq('user_id', res.user!.id);
 
             add(GetUserEvent());

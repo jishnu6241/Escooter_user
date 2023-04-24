@@ -1,11 +1,15 @@
 import 'package:escooter/ui/screens/login.dart';
 import 'package:escooter/ui/screens/complaint_screen.dart';
+import 'package:escooter/ui/screens/profile_creation_screen.dart';
 import 'package:escooter/ui/screens/suggestion_screen.dart';
 import 'package:escooter/ui/widgets/change_password_dialog.dart';
 import 'package:escooter/ui/widgets/custom_action_button.dart';
 import 'package:escooter/ui/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../blocs/auth/sign_up/sign_up_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,6 +20,14 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool isLoading = false;
+  final SignUpBloc signUpBloc = SignUpBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    signUpBloc.add(GetUserEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -69,18 +81,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-                // SettingsCard(
-                //   icon: Icons.person_4_outlined,
-                //   label: 'Profile',
-                //   onTap: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => const ProfileScreen(),
-                //       ),
-                //     );
-                //   },
-                // ),
+                BlocProvider<SignUpBloc>.value(
+                  value: signUpBloc,
+                  child: BlocBuilder<SignUpBloc, SignUpState>(
+                    builder: (context, state) {
+                      return state is SignUpSuccessState
+                          ? SettingsCard(
+                              icon: Icons.person_4_outlined,
+                              label: 'Profile',
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProfileCreationScreen(
+                                      profileDetails: state.userDetails,
+                                    ),
+                                  ),
+                                );
+                                signUpBloc.add(GetUserEvent());
+                              },
+                            )
+                          : const SizedBox();
+                    },
+                  ),
+                ),
                 SettingsCard(
                   icon: Icons.lock_open_outlined,
                   label: 'Change Password',

@@ -1,4 +1,5 @@
 import 'package:escooter/ui/widgets/custom_alert_dialog.dart';
+import 'package:escooter/util/value_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,13 +33,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             TextFormField(
               controller: _passwordController,
               obscureText: _isObscure,
-              validator: (value) {
-                if (value != null && value.trim().isNotEmpty) {
-                  return null;
-                } else {
-                  return 'Enter password';
-                }
-              },
+              validator: passwordValidator,
               decoration: InputDecoration(
                 // border: OutlineInputBorder(
                 //   borderRadius: BorderRadius.circular(20),
@@ -64,13 +59,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               controller: _confirmPasswordController,
               obscureText: _isObscure,
               validator: (value) {
-                if (value != null &&
-                    value.trim().isNotEmpty &&
-                    _passwordController.text.trim() == value) {
-                  return null;
-                } else {
-                  return "Passwords doesn't match";
-                }
+                return confirmPasswordValidator(
+                    value, _passwordController.text.trim());
               },
               decoration: const InputDecoration(
                 // border: OutlineInputBorder(

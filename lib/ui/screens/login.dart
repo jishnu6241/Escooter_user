@@ -21,15 +21,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isObscure = true;
   @override
   void initState() {
-    // Future.delayed(const Duration(milliseconds: 100), () {
-    //   if (Supabase.instance.client.auth.currentUser != null) {
-    //     Navigator.of(context).push(
-    //       MaterialPageRoute(
-    //         builder: (context) => const HomeScreen(),
-    //       ),
-    //     );
-    //   }
-    // });
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (Supabase.instance.client.auth.currentUser != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      }
+    });
     super.initState();
   }
 

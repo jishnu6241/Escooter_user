@@ -1,9 +1,16 @@
+import 'package:escooter/blocs/hubs_and_scooters/hubs_and_scooters_bloc.dart';
 import 'package:escooter/ui/widgets/hub_card.dart';
 import 'package:escooter/ui/widgets/scooter_card.dart';
 import 'package:flutter/material.dart';
 
 class HubDetailsScreen extends StatefulWidget {
-  const HubDetailsScreen({super.key});
+  final dynamic hubDetails;
+  final HubsAndScootersBloc hubsAndScootersBloc;
+  const HubDetailsScreen({
+    super.key,
+    required this.hubDetails,
+    required this.hubsAndScootersBloc,
+  });
 
   @override
   State<HubDetailsScreen> createState() => _HubDetailsScreenState();
@@ -41,20 +48,22 @@ class _HubDetailsScreenState extends State<HubDetailsScreen> {
                 height: 10,
               ),
               HubCard(
+                hubDetails: widget.hubDetails,
                 onTap: () {},
               ),
               const Divider(
                 height: 30,
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    runSpacing: 10,
-                    children: List<Widget>.generate(
-                      10,
-                      (index) => const ScooterCard(),
-                    ),
+                child: ListView.separated(
+                  itemBuilder: (context, index) => ScooterCard(
+                    hubDetails: widget.hubDetails,
+                    hubsAndScootersBloc: widget.hubsAndScootersBloc,
+                    scooterDetails: widget.hubDetails['scooters'][index],
                   ),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
+                  itemCount: widget.hubDetails['scooters'].length,
                 ),
               ),
               const SizedBox(

@@ -60,6 +60,15 @@ String? pincodeValidator(String? value) {
   return null;
 }
 
+String? fiveDigitValidator(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return 'This field is required.';
+  } else if (!RegExp(r'^\d{5}$').hasMatch(value)) {
+    return 'Please enter a valid 5 digit code.';
+  }
+  return null;
+}
+
 String? bankAccountNumberValidator(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'This field is required.';
