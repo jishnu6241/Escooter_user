@@ -6,10 +6,15 @@ import 'package:escooter/ui/widgets/custom_action_button.dart';
 import 'package:escooter/ui/widgets/custom_card.dart';
 import 'package:escooter/ui/widgets/custom_search.dart';
 import 'package:escooter/ui/widgets/hub_card.dart';
+import 'package:escooter/ui/widgets/hub_selector.dart';
 import 'package:escooter/ui/widgets/label_with_text.dart';
+import 'package:escooter/util/value_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/custom_alert_dialog.dart';
@@ -156,6 +161,45 @@ class RideCard extends StatefulWidget {
 }
 
 class _RideCardState extends State<RideCard> {
+  final Razorpay _razorpay = Razorpay();
+  int hubId = 0;
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    await showDialog(
+      context: context,
+      builder: (context) => const CustomAlertDialog(
+        title: 'Payment Success',
+        message: 'Thank you for the payment. Reopen the page to see changes',
+        primaryButtonLabel: 'Ok',
+      ),
+    );
+
+    widget.hubsAndScootersBloc.add(
+      EndRideEvent(
+        rideId: widget.rideDetails['id'],
+        hubId: hubId,
+        amount: getAmount(),
+      ),
+    );
+    //
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Logger().e(response.error);
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertDialog(
+        title: 'Payment Failed',
+        message: response.message ?? 'Something went wrong, Please try again',
+        primaryButtonLabel: 'Ok',
+      ),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet was selected
+  }
+
   String getElapsed() {
     Duration duration = DateTime.now()
         .difference(DateTime.parse(widget.rideDetails['start_time']).toLocal());
@@ -187,6 +231,28 @@ class _RideCardState extends State<RideCard> {
     timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       setState(() {});
     });
+
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  void makePayment() async {
+    // String orderId = await createOrder(widget.testDetails['total_price']);
+
+    var options = {
+      'key': 'rzp_test_j07YpjyCexi5xr',
+      'amount': getAmount() * 100,
+      'name': 'Donatoo',
+      // 'order_id': orderId,
+      'description': 'Ride Payment',
+      'prefill': {
+        'contact': '7788776677',
+        'email': Supabase.instance.client.auth.currentUser!.email,
+      }
+    };
+    Logger().w(options);
+    _razorpay.open(options);
   }
 
   @override
@@ -287,7 +353,21 @@ class _RideCardState extends State<RideCard> {
                     child: CustomActionButton(
                       color: Colors.red,
                       iconData: Icons.report_outlined,
-                      onPressed: () {},
+                      onPressed: () async {
+                        String? reason = await showDialog(
+                          context: context,
+                          builder: (context) => const ReportScooterDialog(),
+                        );
+
+                        if (reason != null) {
+                          widget.hubsAndScootersBloc.add(
+                            ReportScooterEvent(
+                              rideId: widget.rideDetails['id'],
+                              complaint: reason,
+                            ),
+                          );
+                        }
+                      },
                       label: 'Report',
                     ),
                   ),
@@ -299,7 +379,24 @@ class _RideCardState extends State<RideCard> {
                       color: Colors.blue,
                       iconData: Icons.pin_drop_outlined,
                       onPressed: () {
-                        //
+                        showDialog(
+                          context: context,
+                          builder: (context) => CustomAlertDialog(
+                            title: 'Drop Scooter',
+                            message:
+                                'Select the hub youre dropping in to drop the scooter,',
+                            content: HubSelector(
+                              onSelect: (id) {
+                                if (id != 0) {
+                                  hubId = id;
+                                  makePayment();
+                                  Navigator.pop(context);
+                                }
+                              },
+                              label: 'Select Hub',
+                            ),
+                          ),
+                        );
                       },
                       label: 'Drop Scooter',
                     ),
@@ -310,6 +407,47 @@ class _RideCardState extends State<RideCard> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ReportScooterDialog extends StatefulWidget {
+  const ReportScooterDialog({
+    super.key,
+  });
+
+  @override
+  State<ReportScooterDialog> createState() => _ReportScooterDialogState();
+}
+
+class _ReportScooterDialogState extends State<ReportScooterDialog> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomAlertDialog(
+      title: 'Report',
+      message: 'Enter your complaint to report the scooter.',
+      content: Form(
+        key: formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: TextFormField(
+          controller: textEditingController,
+          validator: alphabeticWithSpaceValidator,
+          minLines: 3,
+          maxLines: 5,
+          decoration: const InputDecoration(
+            hintText: 'Enter Complaint',
+          ),
+        ),
+      ),
+      primaryButtonLabel: 'Continue',
+      primaryOnPressed: () {
+        if (formKey.currentState!.validate()) {
+          Navigator.pop(context, textEditingController.text.trim());
+        }
+      },
     );
   }
 }
