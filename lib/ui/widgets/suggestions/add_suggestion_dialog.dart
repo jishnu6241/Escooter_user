@@ -1,5 +1,7 @@
+import 'package:escooter/blocs/suggestion/suggestion_bloc.dart';
 import 'package:escooter/ui/widgets/custom_alert_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddSuggestionDialog extends StatefulWidget {
   const AddSuggestionDialog({
@@ -11,14 +13,12 @@ class AddSuggestionDialog extends StatefulWidget {
 }
 
 class _AddSuggestionDialogState extends State<AddSuggestionDialog> {
-  bool _isLoading = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _suggestionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return CustomAlertDialog(
-      isLoading: _isLoading,
       title: 'Suggestion',
       message: 'Send your valuable opinion to improve E Scooter.',
       content: Form(
@@ -50,30 +50,14 @@ class _AddSuggestionDialogState extends State<AddSuggestionDialog> {
         ),
       ),
       primaryButtonLabel: 'Send',
-      primaryOnPressed: () async {
-        try {
-          if (_formKey.currentState!.validate()) {
-            _isLoading = true;
-            setState(() {});
-            // await Supabase.instance.client.auth.updateUser(
-            //   UserAttributes(
-            //     password: _complaintController.text.trim(),
-            //   ),
-            // );
-            _isLoading = false;
-            setState(() {});
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-          }
-        } catch (e) {
-          showDialog(
-            context: context,
-            builder: (context) => CustomAlertDialog(
-              title: 'Failed!',
-              message: e.toString(),
-              primaryButtonLabel: 'Ok',
+      primaryOnPressed: () {
+        if (_formKey.currentState!.validate()) {
+          BlocProvider.of<SuggestionBloc>(context).add(
+            AddSuggestionEvent(
+              suggestion: _suggestionController.text.trim(),
             ),
           );
+          Navigator.pop(context);
         }
       },
       secondaryButtonLabel: 'Cancel',
