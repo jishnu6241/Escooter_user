@@ -44,7 +44,7 @@ String? alphanumericWithSpaceValidator(String? value) {
 String? alphanumericWithSpecialCharsValidator(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'This field is required.';
-  } else if (!RegExp(r'^[a-zA-Z0-9!@#\$&*~%^()\\/\-+,._\"\[\]{}]+$')
+  } else if (!RegExp(r'^[a-zA-Z0-9!@#\$&*~%^()\\/\-+,._\"\[\]{} ]+$')
       .hasMatch(value)) {
     return 'Please enter only letters, numbers, spaces and special characters.';
   }
